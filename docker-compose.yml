@@ -1,0 +1,32 @@
+services:
+  vault-sync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vault-sync
+    image: febasec/vault-sync
+    env_file:
+      - ./src/colors.env
+      - ./src/tg_creds.env
+    environment:
+      # Variables essential for the script to work. Do not change their values
+      - BACKUP_SOURCE=/app/source
+      - BACKUP_DEST=/app/destination
+      - LOG_FILE=/app/data/vault.log
+      # How many days should the files be retained
+      - RETENTION_DAYS=7
+      # Configuring settings for SSH connections
+      # and transferring backups to a remote host
+      - REMOTE_HOST=username@ip_address
+      - SSH_IDEN_FILE=/root/.ssh/id_ed25519
+      - REMOTE_DEST=/path/to/remote/backups
+    volumes:
+      # Configuring backup directories. Change the value only up to the ":" character
+      # /path/to/your/data - what to backup
+      # /path/to/your/backups - where to store
+      - /path/to/your/data:/app/source:ro
+      - /path/to/your/backups:/app/destination
+      # logs directory
+      - ./data:/app/data
+      # SSH iden. file
+      - ~/.ssh/id_ed25519:/root/.ssh/id_ed25519
